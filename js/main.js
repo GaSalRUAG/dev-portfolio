@@ -88,13 +88,29 @@
       "cv.title": { it: "Tutto l'essenziale su una pagina", de: "Alles Wichtige auf einer Seite", en: "Everything that matters, on one page" },
       "cv.text": { it: "Il mio percorso completo, in formato compatto — come PDF per i vostri documenti.", de: "Mein kompletter Werdegang, kompakt zum Mitnehmen — als PDF für Ihre Unterlagen.", en: "My full background, compact and ready to take away — as a PDF for your records." },
       "cv.btn": { it: "Scarica il CV (PDF)", de: "CV herunterladen (PDF)", en: "Download CV (PDF)" },
-      "footnote": { it: "© 2026 Gaetano Salonia — Informatico AFC, Sviluppatore di applicazioni", de: "© 2026 Gaetano Salonia — Informatiker EFZ, Applikationsentwickler", en: "© 2026 Gaetano Salonia — IT Specialist EFZ, Application Developer" }
+      "cv.btnSoon": { it: "CV in arrivo", de: "CV bald verfügbar", en: "CV coming soon" },
+      "footnote": { it: "© 2026 Gaetano Salonia — Informatico AFC, Sviluppatore di applicazioni", de: "© 2026 Gaetano Salonia — Informatiker EFZ, Applikationsentwickler", en: "© 2026 Gaetano Salonia — IT Specialist EFZ, Application Developer" },
+      "aria.menuOpen": { it: "Apri menu", de: "Menü öffnen", en: "Open menu" },
+      "aria.menuClose": { it: "Chiudi menu", de: "Menü schliessen", en: "Close menu" },
+      "aria.langSwitch": { it: "Seleziona lingua", de: "Sprache wählen", en: "Choose language" },
+      "aria.themeToggle": { it: "Cambia tema", de: "Farbschema wechseln", en: "Toggle theme" },
+      "aria.scrollDown": { it: "Scorri in basso", de: "Nach unten scrollen", en: "Scroll down" }
     };
 
+    let currentLang = "de";
+
     function setLanguage(lang) {
+      currentLang = lang;
       document.querySelectorAll("[data-i18n]").forEach(el => {
         const entry = translations[el.getAttribute("data-i18n")];
         if (entry && entry[lang]) el.textContent = entry[lang];
+      });
+      document.querySelectorAll("[data-i18n-aria]").forEach(el => {
+        const key = el.getAttribute("data-i18n-aria");
+        const entry = translations[key];
+        if (entry && entry[lang] && el.getAttribute("aria-expanded") !== "true") {
+          el.setAttribute("aria-label", entry[lang]);
+        }
       });
       document.querySelectorAll(".lang-btn").forEach(btn => {
         btn.classList.toggle("active", btn.getAttribute("data-lang") === lang);
@@ -166,16 +182,21 @@
     const siteNav = document.getElementById("siteNav");
     const menuToggle = document.getElementById("menuToggle");
 
+    function menuAriaLabel(open) {
+      const key = open ? "aria.menuClose" : "aria.menuOpen";
+      return translations[key][currentLang] || translations[key].de;
+    }
+
     function closeMenu() {
       siteNav.classList.remove("open");
       menuToggle.setAttribute("aria-expanded", "false");
-      menuToggle.setAttribute("aria-label", "Menü öffnen");
+      menuToggle.setAttribute("aria-label", menuAriaLabel(false));
     }
 
     menuToggle.addEventListener("click", () => {
       const open = siteNav.classList.toggle("open");
       menuToggle.setAttribute("aria-expanded", open ? "true" : "false");
-      menuToggle.setAttribute("aria-label", open ? "Menü schliessen" : "Menü öffnen");
+      menuToggle.setAttribute("aria-label", menuAriaLabel(open));
     });
 
     document.querySelectorAll("#menu a").forEach(link => {
@@ -238,3 +259,127 @@
 
       requestAnimationFrame(tickAurora);
     }
+
+    // ---------- Console Easter Egg ----------
+    const gasalMessages = {
+      welcome: {
+        de: "Du schaust unter die Haube? Respekt.",
+        it: "Guardi sotto il cofano? Rispetto.",
+        en: "Peeking under the hood? Respect."
+      },
+      hint: {
+        de: "Tipp: gasal.help() für verfügbare Befehle",
+        it: "Suggerimento: gasal.help() per i comandi disponibili",
+        en: "Hint: gasal.help() for available commands"
+      }
+    };
+
+    const gasalQuotes = {
+      de: [
+        "Sicherheit beginnt mit sauberem Code.",
+        "Präzision in jedem Detail.",
+        "Lernbereitschaft ist mein produktivstes Tool."
+      ],
+      it: [
+        "La sicurezza inizia con codice pulito.",
+        "Precisione in ogni dettaglio.",
+        "La voglia di imparare è il mio strumento più produttivo."
+      ],
+      en: [
+        "Security starts with clean code.",
+        "Accuracy in every detail.",
+        "Willingness to learn is my most productive tool."
+      ]
+    };
+
+    function gasalLang() {
+      return localStorage.getItem("portfolio-lang") || currentLang || "de";
+    }
+
+    window.gasal = {
+      version: "1.0.0",
+      help() {
+        const lang = gasalLang();
+        const lines = {
+          de: [
+            "gasal.help()    — diese Hilfe",
+            "gasal.skills()  — Tech-Stack",
+            "gasal.contact() — E-Mail & LinkedIn",
+            "gasal.quote()   — Zufallszitat",
+            "Konami-Code     — versteckter Bonus"
+          ],
+          it: [
+            "gasal.help()    — questo aiuto",
+            "gasal.skills()  — stack tecnologico",
+            "gasal.contact() — email & LinkedIn",
+            "gasal.quote()   — citazione casuale",
+            "Codice Konami   — bonus nascosto"
+          ],
+          en: [
+            "gasal.help()    — this help",
+            "gasal.skills()  — tech stack",
+            "gasal.contact() — email & LinkedIn",
+            "gasal.quote()   — random quote",
+            "Konami code     — hidden bonus"
+          ]
+        };
+        console.log(lines[lang].join("\n"));
+      },
+      skills() {
+        console.log(
+          "┌─────────────────┬──────────────────────────────┐\n" +
+          "│ Category        │ Stack                        │\n" +
+          "├─────────────────┼──────────────────────────────┤\n" +
+          "│ Languages       │ C++, Java, JS, TS, Python, SQL│\n" +
+          "│ Web             │ HTML, CSS, React, Node.js    │\n" +
+          "│ Data & Systems  │ SQL, Linux, Windows          │\n" +
+          "│ Security        │ TCP/IP, DNS, IT-Security     │\n" +
+          "│ Tools           │ Git, Docker, Scrum           │\n" +
+          "└─────────────────┴──────────────────────────────┘"
+        );
+      },
+      contact() {
+        console.log(
+          "%c📧 gaetanosalo@outlook.de",
+          "color:#5b9cf6;font-weight:bold",
+          "\n🔗 https://www.linkedin.com/in/gaetano-salonia-7802022b3"
+        );
+      },
+      quote() {
+        const lang = gasalLang();
+        const quotes = gasalQuotes[lang] || gasalQuotes.de;
+        const pick = quotes[Math.floor(Math.random() * quotes.length)];
+        console.log(`%c"${pick}"`, "font-style:italic;color:#94a0b8");
+      }
+    };
+
+    const lang = gasalLang();
+    console.log(
+      `%c◆ gasal-portfolio.dev %cv${window.gasal.version}`,
+      "color:#5b9cf6;font-weight:bold;font-size:14px",
+      "color:#94a0b8;font-size:11px"
+    );
+    console.log(`%c${gasalMessages.welcome[lang]}`, "color:#f0f4fa");
+    console.log(`%c${gasalMessages.hint[lang]}`, "color:#64708a;font-size:11px");
+
+    const konami = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight", "KeyB", "KeyA"];
+    let konamiIndex = 0;
+
+    document.addEventListener("keydown", (e) => {
+      if (e.code === konami[konamiIndex]) {
+        konamiIndex++;
+        if (konamiIndex === konami.length) {
+          konamiIndex = 0;
+          document.body.classList.add("konami-active");
+          const msgs = {
+            de: "Konami freigeschaltet — du kennst dich aus.",
+            it: "Konami sbloccato — sai il tuo mestiere.",
+            en: "Konami unlocked — you know your stuff."
+          };
+          console.log(`%c🎉 ${msgs[gasalLang()]}`, "color:#5b9cf6;font-weight:bold;font-size:13px");
+          setTimeout(() => document.body.classList.remove("konami-active"), 3000);
+        }
+      } else {
+        konamiIndex = e.code === konami[0] ? 1 : 0;
+      }
+    });
