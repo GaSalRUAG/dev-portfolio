@@ -1,3 +1,11 @@
 .vercel
 .DS_Store
 Thumbs.db
+deploy-*.json
+deploy-*.mjs
+deploy-*.js
+df-*.json
+mcp-invoke-payload.json
+final-deploy-args.json
+mcp-deploy-payload.json
+.mcp-deploy-payload.json
